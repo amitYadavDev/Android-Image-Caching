@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,7 +20,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -34,6 +38,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -71,55 +77,40 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyScreen(viewModel: ImageViewModel = hiltViewModel()) {
 
-    val imagesUrl = viewModel.imageData.collectAsState()
+    val imagesUrl by viewModel.imageData.collectAsState()
     val bitmaps = viewModel.imageMap.collectAsState()
-    Log.i("MainActivity_abc", "${imagesUrl.value}")
+    Log.i("MainActivity_abc", "${imagesUrl}")
 
 
     val imagesBitmapMap by viewModel.imageMap.collectAsState()
-    val chunkedUrls = imagesUrl.value.chunked(3)
 
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(8.dp)
+    LazyVerticalGrid(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black),
+        //Set 3 column
+        columns = GridCells.Fixed(3),
+        contentPadding = PaddingValues(5.dp)
     ) {
+
         // Step through imagesUrl in chunks of 3 to create rows
-        items(chunkedUrls.size) {
-            val rowUrls = chunkedUrls[it]
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                rowUrls.forEach { url ->
-                    val bitmap = imagesBitmapMap[url]
+        items(imagesUrl.size) {
+            val url = imagesUrl[it]
 
-                    Box(
-                        modifier = Modifier
-                            .weight(1f) // Give equal space to each image
-                            .aspectRatio(1f) // Make it square
-                    ) {
-                        if (bitmap != null) {
-                            Image(
-                                bitmap = bitmap.asImageBitmap(),
-                                contentDescription = null,
-                                modifier = Modifier.fillMaxSize(),
-                                contentScale = ContentScale.Crop
-                            )
-                        } else {
-//                            CircularProgressIndicator(
-//                                modifier = Modifier.align(Alignment.Center)
-//                            )
-                            viewModel.loadImage(url)
-                        }
-                    }
-                }
+            val bitmap = imagesBitmapMap[url]
 
-                // Handle cases where row has fewer than 3 items by filling with Spacer
-                if (rowUrls.size < 3) {
-                    repeat(3 - rowUrls.size) {
-                        Spacer(modifier = Modifier.weight(1f))
-                    }
-                }
+            if(bitmap != null) {
+                Image(
+                    bitmap = bitmap.asImageBitmap(),
+                    contentDescription = "Thumbnail Image",
+                    modifier = Modifier
+                        .padding(5.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .aspectRatio(1f),
+                    contentScale = ContentScale.Crop,
+                )
+            } else {
+                viewModel.loadImage(url)
             }
             Spacer(modifier = Modifier.height(8.dp))
         }
