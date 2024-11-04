@@ -10,6 +10,6 @@ class ImageRepository @Inject constructor(
     private val imageApiService: ImageApiService
 ) {
     suspend fun getImage(): List<ImageModelItem> {
-        return imageApiService.getImage(10)
+        return imageApiService.getImage(100)
     }
 }

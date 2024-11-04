@@ -10,7 +10,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 class ImageLoader(context: Context) {
-    // In-memory cache using LruCache
+    // cache using LruCache
     private val memoryCache: LruCache<String, Bitmap>
     private val cacheDir: File = File(context.cacheDir, "images")
 
