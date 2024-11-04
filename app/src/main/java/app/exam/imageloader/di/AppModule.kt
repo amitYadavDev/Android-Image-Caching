@@ -1,7 +1,7 @@
 package app.exam.imageloader.di
 
 import app.exam.imageloader.common.Utils.IMAGE_BASE_URL
-import app.exam.imageloader.data.ImageApiService
+import app.exam.imageloader.data.remote.ImageApiService
 import app.exam.imageloader.repository.ImageRepository
 import dagger.Module
 import dagger.Provides

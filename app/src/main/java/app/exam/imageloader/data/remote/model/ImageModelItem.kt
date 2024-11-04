@@ -1,4 +1,4 @@
-package app.exam.imageloader.data.model
+package app.exam.imageloader.data.remote.model
 
 data class ImageModelItem(
     val backupDetails: BackupDetails,

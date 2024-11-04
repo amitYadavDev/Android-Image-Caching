@@ -6,8 +6,8 @@ import android.util.Log
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.exam.imageloader.data.model.ImageModel
-import app.exam.imageloader.data.model.Thumbnail
+import app.exam.imageloader.data.remote.model.ImageModel
+import app.exam.imageloader.data.remote.model.Thumbnail
 import app.exam.imageloader.presentation.ImageLoader
 import app.exam.imageloader.repository.ImageRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -55,5 +55,4 @@ class ImageViewModel @Inject constructor(private val imageRepository: ImageRepos
             }
         }
     }
-
 }

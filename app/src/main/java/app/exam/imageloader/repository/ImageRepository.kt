@@ -1,9 +1,7 @@
 package app.exam.imageloader.repository
 
-import app.exam.imageloader.data.ImageApiService
-import app.exam.imageloader.data.model.ImageModel
-import app.exam.imageloader.data.model.ImageModelItem
-import app.exam.imageloader.data.model.Thumbnail
+import app.exam.imageloader.data.remote.ImageApiService
+import app.exam.imageloader.data.remote.model.ImageModelItem
 import javax.inject.Inject
 
 class ImageRepository @Inject constructor(
