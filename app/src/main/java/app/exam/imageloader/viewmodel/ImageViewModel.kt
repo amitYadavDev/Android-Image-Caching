@@ -1,4 +1,4 @@
-package app.exam.imageloader.presentation.viewmodel
+package app.exam.imageloader.viewmodel
 
 import android.content.Context
 import android.graphics.Bitmap

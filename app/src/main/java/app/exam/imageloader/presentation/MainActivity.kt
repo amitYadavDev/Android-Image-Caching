@@ -49,7 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import app.exam.imageloader.common.Utils.isNetworkConnected
 import app.exam.imageloader.presentation.ui.theme.ImageLoaderTheme
-import app.exam.imageloader.presentation.viewmodel.ImageViewModel
+import app.exam.imageloader.viewmodel.ImageViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
