@@ -6,6 +6,7 @@ import android.util.Log
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.exam.imageloader.data.local.ImageEntity
 import app.exam.imageloader.data.remote.model.ImageModel
 import app.exam.imageloader.data.remote.model.Thumbnail
 import app.exam.imageloader.presentation.ImageLoader
@@ -14,6 +15,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,6 +25,9 @@ class ImageViewModel @Inject constructor(private val imageRepository: ImageRepos
     ViewModel() {
     private var _imageData = MutableStateFlow<List<String>>(listOf())
     val imageData get() = _imageData
+
+    private var _dbBitmap = MutableStateFlow<List<Bitmap?>>(listOf())
+    val dbBitmap get() = _dbBitmap
 
     lateinit var imageLoader: ImageLoader
     private val _imageMap = MutableStateFlow<MutableMap<String, Bitmap?>>(mutableMapOf())
@@ -52,6 +58,15 @@ class ImageViewModel @Inject constructor(private val imageRepository: ImageRepos
             val bitmap = imageLoader.loadImage(url)
             _imageMap.value = _imageMap.value.toMutableMap().apply {
                 put(url, bitmap)
+            }
+            imageRepository.saveImagesToDb(ImageEntity(url, bitmap))
+        }
+    }
+
+    fun getImagesFromDb() {
+        viewModelScope.launch(Dispatchers.IO) {
+            imageRepository.getImageFromDb().collect{
+                _dbBitmap.value = it.map { it.image }
             }
         }
     }

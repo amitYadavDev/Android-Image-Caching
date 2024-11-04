@@ -1,5 +1,6 @@
 package app.exam.imageloader.presentation
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
@@ -46,6 +47,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import app.exam.imageloader.common.Utils.isNetworkConnected
 import app.exam.imageloader.presentation.ui.theme.ImageLoaderTheme
 import app.exam.imageloader.presentation.viewmodel.ImageViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -67,7 +69,7 @@ class MainActivity : ComponentActivity() {
                     viewModel.initImageLoader(this)
 //                    viewModel.getImageData()
 //                    Log.i("MainActivity_abc", "${viewModel.imageData}")
-                    MyScreen(viewModel)
+                    MyScreen(viewModel, this)
                 }
             }
         }
@@ -75,14 +77,58 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MyScreen(viewModel: ImageViewModel = hiltViewModel()) {
+fun MyScreen(viewModel: ImageViewModel = hiltViewModel(), context: Context) {
 
     val imagesUrl by viewModel.imageData.collectAsState()
-    val bitmaps = viewModel.imageMap.collectAsState()
-    Log.i("MainActivity_abc", "${imagesUrl}")
-
 
     val imagesBitmapMap by viewModel.imageMap.collectAsState()
+
+
+
+
+    if (!isNetworkConnected(context)) {
+        Log.i("MainActivity_abc", "data from db")
+        viewModel.getImagesFromDb()
+        ShowDbImages(viewModel)
+    } else {
+        LazyVerticalGrid(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black),
+            //Set 3 column
+            columns = GridCells.Fixed(3),
+            contentPadding = PaddingValues(5.dp)
+        ) {
+
+
+            items(imagesUrl.size) {
+                val url = imagesUrl[it]
+
+                val bitmap = imagesBitmapMap[url]
+
+                if (bitmap != null) {
+                    Image(
+                        bitmap = bitmap.asImageBitmap(),
+                        contentDescription = "Thumbnail Image",
+                        modifier = Modifier
+                            .padding(5.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .aspectRatio(1f),
+                        contentScale = ContentScale.Crop,
+                    )
+                } else {
+                    viewModel.loadImage(url)
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+        }
+    }
+}
+
+@Composable
+fun ShowDbImages(viewModel: ImageViewModel) {
+    val dbBitmaps by viewModel.dbBitmap.collectAsState()
+    Log.i("MainActivity_abcd", "${dbBitmaps}")
 
     LazyVerticalGrid(
         modifier = Modifier
@@ -93,15 +139,13 @@ fun MyScreen(viewModel: ImageViewModel = hiltViewModel()) {
         contentPadding = PaddingValues(5.dp)
     ) {
 
-        // Step through imagesUrl in chunks of 3 to create rows
-        items(imagesUrl.size) {
-            val url = imagesUrl[it]
 
-            val bitmap = imagesBitmapMap[url]
+        items(dbBitmaps.size) {
+            val bitmap = dbBitmaps[it]
 
-            if(bitmap != null) {
+            bitmap?.let {
                 Image(
-                    bitmap = bitmap.asImageBitmap(),
+                    bitmap = it.asImageBitmap(),
                     contentDescription = "Thumbnail Image",
                     modifier = Modifier
                         .padding(5.dp)
@@ -109,9 +153,8 @@ fun MyScreen(viewModel: ImageViewModel = hiltViewModel()) {
                         .aspectRatio(1f),
                     contentScale = ContentScale.Crop,
                 )
-            } else {
-                viewModel.loadImage(url)
             }
+
             Spacer(modifier = Modifier.height(8.dp))
         }
     }
