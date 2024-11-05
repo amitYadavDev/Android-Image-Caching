@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -89,8 +90,10 @@ fun MyScreen(viewModel: ImageViewModel = hiltViewModel(), context: Context) {
     if (!isNetworkConnected(context)) {
         Log.i("MainActivity_abc", "data from db")
         viewModel.getImagesFromDb()
+        Toast.makeText(context, "There is no internet, showing old images", Toast.LENGTH_SHORT).show()
         ShowDbImages(viewModel)
     } else {
+        Toast.makeText(context, "Live images", Toast.LENGTH_SHORT).show()
         LazyVerticalGrid(
             modifier = Modifier
                 .fillMaxSize()
